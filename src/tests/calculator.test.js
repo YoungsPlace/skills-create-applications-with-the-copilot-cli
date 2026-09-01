@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const { calculate, parseNumber } = require('../calculator.js');
+const { calculate, parseNumber, modulo, power, squareRoot } = require('../calculator.js');
 
 test('addition supports basic integer sums', () => {
   assert.equal(calculate('add', 2, 3), 5);
@@ -44,8 +44,52 @@ test('division by zero throws an error', () => {
   assert.throws(() => calculate('/', 10, 0), /Cannot divide by zero/);
 });
 
+test('modulo returns the remainder of division', () => {
+  assert.equal(modulo(10, 3), 1);
+  assert.equal(calculate('modulo', 10, 3), 1);
+  assert.equal(calculate('%', 10, 3), 1);
+});
+
+test('modulo by zero throws an error', () => {
+  assert.throws(() => modulo(10, 0), /Cannot divide by zero/);
+  assert.throws(() => calculate('modulo', 10, 0), /Cannot divide by zero/);
+});
+
+test('power computes exponentiation', () => {
+  assert.equal(power(2, 5), 32);
+  assert.equal(calculate('power', 2, 5), 32);
+  assert.equal(calculate('^', 2, 5), 32);
+});
+
+test('squareRoot computes valid roots', () => {
+  assert.equal(squareRoot(9), 3);
+  assert.equal(squareRoot(16), 4);
+  assert.equal(calculate('sqrt', 9, 0), 3);
+});
+
+test('squareRoot rejects negative numbers', () => {
+  assert.throws(() => squareRoot(-9), /Square root is not defined for negative numbers/);
+});
+
+test('extended calculator examples from the image', () => {
+  assert.equal(modulo(5, 2), 1);
+  assert.equal(power(2, 3), 8);
+  assert.equal(squareRoot(16), 4);
+  assert.equal(calculate('modulo', 5, 2), 1);
+  assert.equal(calculate('power', 2, 3), 8);
+  assert.equal(calculate('sqrt', 16, 0), 4);
+});
+
+test('square root handles edge cases', () => {
+  assert.equal(squareRoot(0), 0);
+  assert.equal(squareRoot(1), 1);
+  assert.throws(() => squareRoot(-1), /Square root is not defined for negative numbers/);
+  assert.throws(() => calculate('sqrt', -1, 0), /Square root is not defined for negative numbers/);
+});
+
 test('unsupported operations throw an error', () => {
-  assert.throws(() => calculate('modulo', 10, 3), /Unsupported operation/);
+  assert.throws(() => calculate('factorial', 5, 0), /Unsupported operation/);
+  assert.throws(() => calculate('sqrt', -9, 0), /Square root is not defined for negative numbers/);
 });
 
 test('parseNumber converts valid numeric strings to numbers', () => {
